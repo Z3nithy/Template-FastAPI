@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+SQLAlchemy
+python-jose
+pwdlib
+python-dotenv
