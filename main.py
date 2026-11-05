@@ -1,10 +1,14 @@
 from fastapi import FastAPI
-from database import Base, engine
+from core.config import settings
 import uvicorn
 
-app = FastAPI()
 
-Base.metadata.create_all(bind=engine)
+app = FastAPI(title="Template FastAPI", debug=settings.debug)
+
+
+@app.get("/health", tags=["health"])
+def health_check() -> dict[str, str]:
+    return {"status": "ok"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", port=8000, reload=True)
+    uvicorn.run("main:app", port=8000, reload=settings.debug)

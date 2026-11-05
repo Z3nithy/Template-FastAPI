@@ -1,25 +1,31 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
-from core.config import DATABASE_URL
+from collections.abc import Generator
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+
+from core.config import settings
+
+
+connect_args = (
+    {"check_same_thread": False}
+    if settings.database_url.startswith("sqlite")
+    else {}
+)
 
 engine = create_engine(
-    DATABASE_URL,
-    echo=True
+    settings.database_url,
+    echo=settings.debug,
+    connect_args=connect_args,
 )
 
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+SessionLocal = sessionmaker(autoflush=False, bind=engine)
 
 
 class Base(DeclarativeBase):
     pass
 
 
-def get_db():
+def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
 
     try:
